@@ -14,7 +14,7 @@ WALL_COLOR = (0, 0, 255)
 FLOOR_COLOR = (0, 255, 0)
 
 RAY_ANGLE = 30
-RAY_COUNT = 100
+RAY_COUNT = 80
 RAY_PREC = 2
 
 #### VARS ####
@@ -60,14 +60,21 @@ def draw_3d():
         distance = distance * math.cos(math.radians(angle - ball["angle"]))
         rect_height = (1 - (distance / max_dist)) * HEIGHT
 
-        wall_rect = Rect(rect_width * i + WIDTH / 2, (HEIGHT - rect_height) / 2, rect_width, rect_height)
-        screen.draw.filled_rect(wall_rect, WALL_COLOR)
-        # screen.draw.rect(wall_rect, "black")
+        wall_actor = Actor("wall1", anchor=("left", "top"))
+        wall_actor.x = rect_width * i + WIDTH / 2
+        wall_actor.y = (HEIGHT - rect_height) / 2
+        wall_actor._surf = pygame.transform.scale(wall_actor._surf, (rect_width+5, rect_height+5))
+        wall_actor._update_pos()
 
-        floor_rect = Rect(rect_width * i + WIDTH / 2, max((HEIGHT - rect_height) / 2 + rect_height, HEIGHT / 2),
-                          rect_width, (HEIGHT - rect_height) / 2)
-        screen.draw.filled_rect(floor_rect, FLOOR_COLOR)
-        # screen.draw.rect(floor_rect, "black")
+        wall_actor.draw()
+
+        floor_actor = Actor("floor", anchor=("left", "top"))
+        floor_actor.x = rect_width * i + WIDTH / 2
+        floor_actor.y = max((HEIGHT - rect_height) / 2 + rect_height, HEIGHT / 2)
+        floor_actor._surf = pygame.transform.scale(floor_actor._surf, (rect_width, (HEIGHT - rect_height) / 2))
+        floor_actor._update_pos()
+
+        floor_actor.draw()
 
 
 # Rysowanie promieni
