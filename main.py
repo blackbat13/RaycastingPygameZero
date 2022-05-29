@@ -55,18 +55,19 @@ def draw_3d():
     rect_width = (WIDTH / 2) / RAY_COUNT
     max_dist = WIDTH / 2
     for i in range(RAY_COUNT):
-        px, py, angle = line_points[i]
+        px, py, angle, wall = line_points[i]
         distance = dist(ball["x"], ball["y"], px, py)
         distance = distance * math.cos(math.radians(angle - ball["angle"]))
         rect_height = (1 - (distance / max_dist)) * HEIGHT
 
-        wall_actor = Actor("wall1", anchor=("left", "top"))
-        wall_actor.x = rect_width * i + WIDTH / 2
-        wall_actor.y = (HEIGHT - rect_height) / 2
-        wall_actor._surf = pygame.transform.scale(wall_actor._surf, (rect_width+5, rect_height+5))
-        wall_actor._update_pos()
+        if wall is not None:
+            wall_actor = Actor("wall1", anchor=("left", "top"))
+            wall_actor.x = rect_width * i + WIDTH / 2
+            wall_actor.y = (HEIGHT - rect_height) / 2
+            wall_actor._surf = pygame.transform.scale(wall_actor._surf, (rect_width+5, rect_height+5))
+            wall_actor._update_pos()
 
-        wall_actor.draw()
+            wall_actor.draw()
 
         floor_actor = Actor("floor", anchor=("left", "top"))
         floor_actor.x = rect_width * i + WIDTH / 2
@@ -80,7 +81,7 @@ def draw_3d():
 # Rysowanie promieni
 def draw_rays():
     for point in line_points:
-        px, py, angle = point
+        px, py, angle, wall = point
         screen.draw.line((ball["x"], ball["y"]), (px, py), "yellow")
 
 
@@ -123,11 +124,15 @@ def update_ball():
     while angle < ball["angle"] + RAY_ANGLE:
         x = ball["x"]
         y = ball["y"]
-        while not check_collision(x, y):
+
+        counter = 0
+        while not check_collision(x, y) and counter < 150:
             x += math.cos(math.radians(angle)) * RAY_PREC
             y += math.sin(math.radians(angle)) * RAY_PREC
+            counter += 1
 
-        line_points.append((x, y, angle))
+        wall = check_collision(x, y)
+        line_points.append((x, y, angle, wall))
 
         angle += (RAY_ANGLE * 2) / RAY_COUNT
 
@@ -139,8 +144,8 @@ def update_ball():
 def check_collision(x, y):
     for wall in walls_list:
         if wall.collidepoint((x, y)):
-            return True
-    return False
+            return wall
+    return None
 
 
 def dist(x1, y1, x2, y2):
