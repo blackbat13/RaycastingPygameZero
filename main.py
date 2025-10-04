@@ -15,6 +15,7 @@ FLOOR_COLOR = (0, 255, 0)
 RAY_ANGLE = 30
 RAY_COUNT = 80
 RAY_PRECISION = 2
+RAY_LENGTH = 200
 
 """ VARIABLES """
 
@@ -167,7 +168,7 @@ def update_rays():
         y = ball["y"]
 
         counter = 0
-        while not check_collision(x, y) and counter < 150:
+        while not check_collision(x, y) and counter < RAY_LENGTH:
             x += math.cos(math.radians(angle)) * RAY_PRECISION
             y += math.sin(math.radians(angle)) * RAY_PRECISION
             counter += 1
